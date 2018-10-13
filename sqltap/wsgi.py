@@ -27,13 +27,15 @@ class SQLTapMiddleware(object):
     :param path: A path prefix for access. Default is `'/__sqltap__'`
     """
 
-    def __init__(self, app, path='/__sqltap__'):
+    def __init__(self, app, path='/__sqltap__', **kwargs):
         self.app = app
         self.path = path.rstrip('/')
         self.on = False
         self.collector = queue.Queue(0)
         self.stats = []
-        self.profiler = sqltap.ProfilingSession(collect_fn=self.collector.put)
+        self.profiler = sqltap.ProfilingSession(
+            collect_fn=self.collector.put, **kwargs
+        )
 
     def __call__(self, environ, start_response):
         path = environ.get('PATH_INFO', '')
